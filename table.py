@@ -1,4 +1,5 @@
 from errors import *
+from ball import*
 
 
 class Table(object):
@@ -12,6 +13,7 @@ class Table(object):
         self.bias = bias
         self.rtype = rtype
         self.pockets = {}
+        self.history = []
 
         if rtype == "f":  # french roulette order
             pockets = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13,
@@ -46,6 +48,10 @@ class Table(object):
         """returns bias list"""
         return self.bias
 
+    def get_history(self):
+        """returns the history of roulette outcomes"""
+        return self.history
+
     def get_rtype(self):
         """returns roulette type"""
         return self.rtype
@@ -53,6 +59,25 @@ class Table(object):
     def get_pocketnumbers(self):
         """returns all pocket numbers"""
         return self.pockets.keys()
+
+    def play_round(self, player):
+        """plays a round of roulette
+           player - the person playing the round"""
+        # get players bet
+        bets = player.get_current_bets()
+        # play ball
+        ball = Ball(self)
+        winning_num = ball.throw_ball()
+        # add to roulette history
+        self.history.append(winning_num)
+        # compare with player
+        for bet in bets:
+            if bet.get_type() == "Single" and winning_num == bet.get_pocketc():
+                # pay out price
+                player.change_player_balance(bet.get_bet_amount()*36)
+            else:
+                player.change_player_balance(-bet.get_bet_amount())
+        player.del_current_bets()
 
 
 test = Table(None, "a")
