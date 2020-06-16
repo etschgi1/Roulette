@@ -1,5 +1,5 @@
 from wallet import*
-from bet import SingleBet
+from bet import SingleBet, ColorBet
 
 
 class Player(object):
@@ -15,6 +15,10 @@ class Player(object):
         self.Wallet = Wallet(self.startmoney, self.canHaveDebt)
         self.bet_history = []
         self.current_bets = []
+
+    def get_player_table(self):
+        """returns the table obj the player plays on"""
+        return self.table
 
     def get_current_balance(self):
         """returns the wallet balance of a given player"""
@@ -42,6 +46,7 @@ class Player(object):
            bet_type - type of bet ("Single",)
            choice - pocket(s) player plays a list defaults to 0 pocket
         adds bet to bet history"""
+        # choice will be outputed as list
         if type(choice) != list:
             x = choice
             choice = []
@@ -49,9 +54,13 @@ class Player(object):
         # only one choice possible
         if bet_type == "Single" and len(choice) == 1:
             bet = SingleBet(choice, bet_amount, self.table, self)
+
+        if bet_type == "Color" and len(choice) == 1:
+            bet = ColorBet(choice, bet_amount, self.table, self)
         # add to bet history
         try:
             self.current_bets.append(bet)
             self.bet_history.append(bet)
         except:
             return
+            print("----debug no bet added to betlist----")

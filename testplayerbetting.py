@@ -1,5 +1,5 @@
-from player import*
-from table import*
+from player import Player
+from table import Table
 import random
 
 
@@ -42,5 +42,18 @@ def sim_singleplayer(runs, betamount,  start_money, debt=True, rand=False, betli
         show_results(table, testsubject)
 
 
-sim_singleplayer(50, [5, 4, 9, 8], 1000, True,
-                 True, [23, 33, 9], debug_text=False)
+# sim_singleplayer(50, [5, 4, 9, 8], 1000, True, False,
+#                 [1, 2, 3, 4, 5, 6], debug_text = True)
+
+colortest = True
+if colortest == True:
+    # Test Color betting
+    bias = [1]+[0]*36
+    tisch = Table(bias)
+    eli = Player(tisch, 500, True)
+    print(f"before betting {eli.get_current_balance()}")
+    eli.bet(10, "Color", "r")
+    tisch.play_round(eli, True)
+    print(eli.get_current_balance())
+
+"""betlist not behaving proberly, probably betamount has bugs too"""

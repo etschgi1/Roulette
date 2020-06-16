@@ -6,7 +6,7 @@ class Table(object):
     """Represents a object table supports different table styles french or american
     """
 
-    def __init__(self, bias=[1]*37, rtype="f"):
+    def __init__(self, bias=[1]*38, rtype="f"):
         """Initialize the roulett table and all pockets
         bias - list with wheights for pockets
         rtype - either "f" for french or "a" for american roulette type"""
@@ -60,21 +60,55 @@ class Table(object):
         """returns all pocket numbers"""
         return self.pockets.keys()
 
-    def play_round(self, player):
+    def get_pocket_color(self, num):
+        """returns color for num"""
+        if num == 0 or num == "00":
+            return "g"
+        elif num % 2 == 0:
+            if self.get_rtype() == "f":
+                return "r"
+            else:
+                return "b"
+        else:
+            if self.get_rtype() == "f":
+                return "b"
+            else:
+                return "r"
+
+    def play_round(self, player, debug=False):
         """plays a round of roulette
            player - the person playing the round"""
         # get players bet
         bets = player.get_current_bets()
         # play ball
         ball = Ball(self)
+        # winning number
         winning_num = ball.throw_ball()
         # add to roulette history
         self.history.append(winning_num)
         # compare with player
+        if debug:
+            print("inside play_round")
+            print(bets[0].get_colorc())
+            print("ball obj: winning number:")
+            print(winning_num)
         for bet in bets:
-            if bet.get_type() == "Single" and winning_num == bet.get_pocketc():
+            # winning color inside loop to support betting on multiple tables
+            winning_color = player.get_player_table().get_pocket_color(winning_num)
+            if debug:
+                print(winning_color)
+                print(bet.get_colorc())
+            bet_type = bet.get_type()
+            # Single bets
+            if bet_type == "Single" and winning_num == bet.get_pocketc():
                 # pay out price
                 player.change_player_balance(bet.get_bet_amount()*36)
+            # Color bets
+            elif bet_type == "Color" and winning_color == bet.get_colorc():
+                # pay out price
+                if debug:
+                    print("winn!!!!!!!!!")
+                player.change_player_balance(bet.get_bet_amount()*2)
             else:
                 player.change_player_balance(-bet.get_bet_amount())
         player.del_current_bets()
