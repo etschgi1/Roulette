@@ -20,6 +20,10 @@ class Player(object):
         """returns the table obj the player plays on"""
         return self.table
 
+    def get_wallet(self):
+        """returns the wallet of a player"""
+        return self.Wallet
+
     def get_current_balance(self):
         """returns the wallet balance of a given player"""
         return self.Wallet.get_wealth()
@@ -37,13 +41,13 @@ class Player(object):
         self.current_bets = []
 
     def change_player_balance(self, amount):
-        """amount - figure by with wealth is changed 
+        """amount - figure by with wealth is changed
         changes the players balance"""
         self.Wallet.change_wealth(amount)
 
     def bet(self, bet_amount, bet_type, choice=[0]):
-        """bet_amount- amount of bet
-           bet_type - type of bet ("Single",)
+        """bet_amount - amount of bet
+           bet_type - type of bet("Single",)
            choice - pocket(s) player plays a list defaults to 0 pocket
         adds bet to bet history"""
         # choice will be outputed as list
@@ -64,3 +68,34 @@ class Player(object):
         except:
             return
             print("----debug no bet added to betlist----")
+
+    def update_balance(self, winner_num, winner_col):
+        """updates balance after each round"""
+        if self.current_bets:
+            for bet in self.current_bets:
+                won = False
+                bet_type = bet.get_type()
+                if bet_type == "Single" and winner_num == bet.get_pocketc():
+                    self.change_player_balance(bet.get_bet_amount()*35)
+                    won = True
+                if bet_type == "Color" and winner_col == bet.get_colorc():
+                    self.change_player_balance(bet.get_bet_amount())
+                    won = True
+                if won == False:
+                    self.change_player_balance(-bet.get_bet_amount())
+            self.del_current_bets()
+        else:
+            print("No current bets placed can't update")
+
+
+class SimPlayer(Player):
+    """Models a Sim Player has a number"""
+
+    def __init__(self, table, startmoney, canHaveDebt, number):
+        # super init
+        super().__init__(table, startmoney, canHaveDebt)
+        self.number = number
+
+    def get_SimPlayer_Number(self):
+        """returns the number for a given SimPlayer"""
+        return self.number

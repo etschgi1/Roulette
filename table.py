@@ -56,6 +56,10 @@ class Table(object):
         """returns roulette type"""
         return self.rtype
 
+    def get_all_pockets(self):
+        """returns all pockets"""
+        return self.pockets
+
     def get_pocketnumbers(self):
         """returns all pocket numbers"""
         return self.pockets.keys()
@@ -74,6 +78,14 @@ class Table(object):
                 return "b"
             else:
                 return "r"
+
+    def play_round_new(self, debug=False):
+        """plays a round return the [winning number, color]"""
+        ball = Ball(self)
+        # winning_num
+        winner = ball.throw_ball()
+        color = self.get_pocket_color(winner)
+        return [winner, color]
 
     def play_round(self, player, debug=False):
         """plays a round of roulette
